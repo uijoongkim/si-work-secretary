@@ -1,0 +1,23 @@
+{
+  "name": "si-work-secretary",
+  "version": "0.1.0",
+  "description": "Windows tray assistant for work follow-ups across Jira, Confluence, Bitbucket and Synology Chat",
+  "main": "src/main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "dist:win": "electron-builder --win nsis",
+    "dist:dir": "electron-builder --dir"
+  },
+  "devDependencies": {
+    "electron": "^44.10.2",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "kr.siwork.secretary",
+    "productName": "SI Work Secretary",
+    "directories": { "output": "release" },
+    "files": ["src/**/*", "assets/**/*", "package.json"],
+    "win": { "target": ["nsis"], "icon": "assets/tray.ico" },
+    "nsis": { "oneClick": false, "perMachine": false, "allowToChangeInstallationDirectory": true, "createDesktopShortcut": true, "createStartMenuShortcut": true }
+  }
+}

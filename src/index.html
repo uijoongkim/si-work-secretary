@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data:">
+  <title>SI Work Secretary</title><link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-mark">S</div><div><strong>Work Secretary</strong><small>업무 비서</small></div></div>
+      <div class="workspace-label">WORKSPACE</div>
+      <button class="nav-item active" data-view="today"><span class="nav-icon">◷</span>오늘의 요약<span class="nav-count" id="nav-count">6</span></button>
+      <button class="nav-item" data-view="settings"><span class="nav-icon">⚙</span>연동 설정</button>
+      <div class="sidebar-bottom"><div class="avatar">UJ</div><div><strong>내 업무 공간</strong><small>로컬 전용</small></div><span class="dots">•••</span></div>
+    </aside>
+    <main class="main-content">
+      <header class="topbar"><div class="breadcrumb">내 업무 공간 <span>/</span> <b id="top-title">오늘의 요약</b></div><div class="top-actions"><span class="sync-label"><i class="sync-dot"></i> 동기화 완료</span><button class="icon-button" id="refresh" title="새로고침">↻</button><button class="icon-button bell" id="notify" title="Windows 알림 테스트">♧</button></div></header>
+      <section id="today-view" class="view">
+        <div class="page-heading"><div><div class="eyebrow" id="today-date">오늘</div><h1>놓치지 않게, 한 번에.</h1><p class="muted">업무 도구에 흩어진 할 일을 모았어요.</p></div><button class="primary-button" id="sync-now"><span>↻</span> 지금 동기화</button></div>
+        <div class="summary-strip"><div class="summary-icon">✦</div><div class="summary-copy"><b id="summary-headline">오늘 확인할 항목 6개를 모았습니다.</b><span>다음 자동 요약 <strong>12:30</strong> <span class="separator">·</span> 알림 영역에서 계속 실행 중</span></div><div class="schedule-badge">아침 08:30 <span>·</span> 점심 12:30 <span>·</span> 저녁 18:00</div></div>
+        <div class="stats-row"><div class="stat-card"><div class="stat-top"><span>확인할 항목</span><span class="stat-symbol purple">✦</span></div><div class="stat-value" id="stat-open">6<span>건</span></div><small>완료 체크로 목록에서 정리</small></div><div class="stat-card"><div class="stat-top"><span>기한 임박</span><span class="stat-symbol orange">◷</span></div><div class="stat-value" id="stat-due">2<span>건</span></div><small>오늘 또는 내일까지</small></div><div class="stat-card"><div class="stat-top"><span>멘션 · 리뷰</span><span class="stat-symbol blue">@</span></div><div class="stat-value" id="stat-mention">3<span>건</span></div><small>확인 후 완료 처리</small></div><div class="stat-card"><div class="stat-top"><span>Worklog 확인</span><span class="stat-symbol green">▤</span></div><div class="stat-value" id="stat-worklog">1<span>건</span></div><small>오늘 등록 여부 기준</small></div></div>
+        <div class="section-heading"><div><h2>확인할 일</h2><span class="section-caption">완료한 항목은 체크하면 이후 요약에서 숨겨집니다.</span></div><div class="filters"><button class="filter active" data-filter="all">전체 <b id="filter-all">6</b></button><button class="filter" data-filter="jira">Jira</button><button class="filter" data-filter="confluence">Confluence</button><button class="filter" data-filter="bitbucket">Bitbucket</button><button class="filter" data-filter="synology">Synology</button></div></div>
+        <div id="items-list" class="items-list"></div>
+        <div class="privacy-note"><span>▣</span><div><b>내 PC에만 저장됩니다</b><small>연동 정보와 완료 체크는 이 PC의 사용자 데이터에 보관됩니다. 비밀번호와 토큰은 Windows 보호 저장소로 암호화됩니다.</small></div></div>
+      </section>
+      <section id="settings-view" class="view hidden">
+        <div class="page-heading"><div><div class="eyebrow">설정</div><h1>업무 도구 연결</h1><p class="muted">사내 서버 주소와 계정을 입력하세요. 정보는 이 PC에만 보관됩니다.</p></div><button class="primary-button" id="save-config">설정 저장</button></div>
+        <div class="settings-grid" id="settings-grid"></div>
+        <div class="settings-footer"><div><b>자동 요약 시간</b><span>Windows 로그인 시 시작하며, 아래 시간에 요약 알림을 보냅니다.</span></div><div class="times"><label>아침<input value="08:30" id="time-1"></label><label>점심<input value="12:30" id="time-2"></label><label>저녁<input value="18:00" id="time-3"></label></div></div>
+      </section>
+      <footer class="footer"><span>SI Work Secretary <span class="version">v0.1.0 · Preview</span></span><span>사내 시스템 연결은 연동 설정 후 활성화됩니다.</span></footer>
+    </main>
+  </div>
+  <div class="toast" id="toast"></div>
+  <script src="./renderer.js"></script>
+</body>
+</html>
