@@ -46,6 +46,7 @@ function readSettings(){
   const next=structuredClone(config);
   document.querySelectorAll('[data-service][data-key]').forEach(el=>{const {service,key}=el.dataset;next[service][key]=el.value});
   next.schedule=[$('#time-1').value,$('#time-2').value,$('#time-3').value];
+  next.historyDays=Math.min(90,Math.max(1,Number.parseInt($('#history-days').value,10)||7));
   return next;
 }
 async function init(){
@@ -53,6 +54,8 @@ async function init(){
   if(!config.jira)config.jira={};if(!config.confluence)config.confluence={};if(!config.bitbucket)config.bitbucket={};if(!config.synology)config.synology={};
   for(const key of ['jira','confluence','bitbucket','synology'])config[key]={authType:'basic',...config[key]};
   config.schedule=config.schedule||['08:30','12:30','18:00'];
+  config.historyDays=Number(config.historyDays)||7;
+  $('#history-days').value=config.historyDays;
   config.schedule.forEach((t,i)=>{const el=$(`#time-${i+1}`);if(el)el.value=t});
   renderSettings();renderSummary(await window.secretary.getSummary());
   const now=new Date();$('#today-date').textContent=new Intl.DateTimeFormat('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'long'}).format(now);
