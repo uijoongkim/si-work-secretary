@@ -2,8 +2,8 @@ const $ = selector => document.querySelector(selector);
 const SOURCE = { jira:{label:'Jira',mark:'J',className:'source-jira'},confluence:{label:'Confluence',mark:'C',className:'source-confluence'},bitbucket:{label:'Bitbucket',mark:'B',className:'source-bitbucket'},synology:{label:'Synology Chat',mark:'S',className:'source-synology'} };
 const SERVICE_FIELDS = {
   jira:{title:'Jira',mark:'J',className:'source-jira',subtitle:'Jira 9.12.4 · Server / Data Center',fields:[['baseUrl','서버 주소','https://jira.company.local'],['username','사용자명','사내 계정'],['authType','인증 방식',''],['password','비밀번호 또는 PAT','저장된 값은 암호화되어 유지'],['additionalJql','추가 JQL · 선택','예: reviewer = currentUser()']]},
-  confluence:{title:'Confluence',mark:'C',className:'source-confluence',subtitle:'Confluence 8.5.0 · Server / Data Center',fields:[['baseUrl','서버 주소','https://wiki.company.local'],['username','사용자명','사내 계정'],['authType','인증 방식',''],['password','비밀번호 또는 PAT','저장된 값은 암호화되어 유지']]},
-  bitbucket:{title:'Bitbucket',mark:'B',className:'source-bitbucket',subtitle:'Bitbucket 8.9.10 · Server / Data Center',fields:[['baseUrl','서버 주소','https://git.company.local'],['username','사용자명','사내 계정'],['authType','인증 방식',''],['password','비밀번호 또는 PAT','저장된 값은 암호화되어 유지']]},
+  confluence:{title:'Confluence',mark:'C',className:'source-confluence',subtitle:'Confluence 8.5.0 · Server / Data Center',fields:[['baseUrl','서버 주소','https://wiki.company.local'],['username','사용자명','사내 계정'],['authType','인증 방식',''],['password','비밀번호 또는 PAT','저장된 값은 암호화되어 유지'],['additionalCql','추가 CQL 필터 · 선택','예: space = "SWA" AND type = page']]},
+  bitbucket:{title:'Bitbucket',mark:'B',className:'source-bitbucket',subtitle:'Bitbucket 8.9.10 · Server / Data Center',fields:[['baseUrl','서버 주소','https://git.company.local'],['username','사용자명','사내 계정'],['authType','인증 방식',''],['password','비밀번호 또는 PAT','저장된 값은 암호화되어 유지'],['projectKeys','프로젝트 키 · 선택','예: SWA, PLATFORM'],['repositorySlugs','저장소 slug · 선택','예: secretary, portal']]},
   synology:{title:'Synology Chat',mark:'S',className:'source-synology',subtitle:'Synology Chat Server Bot API',fields:[['baseUrl','Chat 서버 주소','https://chat.company.local'],['botToken','Bot Token','저장된 값은 암호화되어 유지'],['channels','채널 ID (쉼표 구분, 선택)','예: 2, 5'],['names','내 이름/별칭 (쉼표 구분)','예: uijoong, 의중']]}
 };
 let config = {};
@@ -36,7 +36,7 @@ function renderSettings(){
     const fields=service.fields.map(([name,label,placeholder])=>{
       if(name==='authType')return `<label class="field"><span>${label}</span><select data-service="${key}" data-key="authType"><option value="basic" ${data.authType!=='bearer'?'selected':''}>Basic (사용자명 / 비밀번호)</option><option value="bearer" ${data.authType==='bearer'?'selected':''}>Bearer Token (PAT)</option></select></label>`;
       const type=['password','botToken'].includes(name)?'password':'text';
-      return `<label class="field ${name==='baseUrl'?'full':''}"><span>${label}</span><input type="${type}" data-service="${key}" data-key="${name}" value="${esc(data[name]||'')}" placeholder="${placeholder}"></label>`;
+      return `<label class="field ${['baseUrl','additionalJql','additionalCql'].includes(name)?'full':''}"><span>${label}</span><input type="${type}" data-service="${key}" data-key="${name}" value="${esc(data[name]||'')}" placeholder="${placeholder}"></label>`;
     }).join('');
     return `<article class="service-card"><div class="service-head"><div class="service-icon ${service.className}">${service.mark}</div><div><strong>${service.title}</strong><small>${service.subtitle}</small></div><button class="toggle ${data.enabled?'on':''}" role="switch" aria-checked="${Boolean(data.enabled)}" aria-label="${service.title} 사용" data-toggle="${key}"></button></div><div class="fields">${fields}</div></article>`;
   }).join('');
