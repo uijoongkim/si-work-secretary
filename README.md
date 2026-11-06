@@ -10,6 +10,7 @@ Windows 알림 영역(tray)에 상주하며 Jira, Confluence, Bitbucket, Synolog
 - 매일 아침 08:30, 점심 12:30, 저녁 18:00에 Windows 알림을 보냅니다. 시간은 설정 화면에서 바꿀 수 있습니다.
 - 지금 동기화, 알림 미리 보내기, 출처별 필터, 항목 완료 체크를 제공합니다.
 - 과거 항목 조회 기간을 1~90일로 설정할 수 있습니다. 기본값은 최근 7일입니다.
+- Jira JQL, Confluence CQL, Bitbucket 프로젝트/저장소 필터로 조회 대상을 직접 좁힐 수 있습니다.
 - 아무 서버도 연결하지 않은 경우 샘플 데이터로 화면을 확인할 수 있습니다.
 - Jira Server/Data Center, Confluence Server/Data Center, Bitbucket Server/Data Center, Synology Chat Server API를 각각 연결하는 어댑터를 포함합니다.
 - 설정, 비밀정보, 완료 항목은 사용자별 Electron 데이터 디렉터리에 저장합니다. 비밀번호와 토큰은 Electron `safeStorage`로 암호화합니다.
@@ -37,12 +38,14 @@ npm run dist:win
 
 | 서비스 | 읽어오는 내용 | 연동 방식 / 참고 |
 |---|---|---|
-| Jira 9.12.4 | 나에게 할당되거나 내가 생성/Reporter인 미완료 이슈의 기한, 이슈의 Assignee/Reporter 중 오늘 Worklog가 없는 사용자 | `/rest/api/2/search`, `/rest/api/2/issue/{key}/worklog`. 추가 JQL을 설정해 리뷰 담당자 필드/업무 범위를 보완할 수 있습니다. |
-| Confluence 8.5.0 | 설정한 기간 안에 나를 멘션한 페이지/댓글 검색 결과 | CQL `mention = currentUser()`. 현재 사용자 컨텍스트로 인증해야 합니다. |
-| Bitbucket 8.9.10 | 설정한 기간 안에 갱신된 내가 리뷰어인 열린 Pull Request | `/rest/api/1.0/dashboard/pull-requests?role=REVIEWER&state=OPEN`. |
+| Jira 9.12.4 | 나에게 할당되거나 내가 생성/Reporter인 미완료 이슈의 기한, 이슈의 Assignee/Reporter 중 오늘 Worklog가 없는 사용자 | `/rest/api/2/search`, `/rest/api/2/issue/{key}/worklog`. 추가 JQL로 프로젝트·담당자·리뷰어 필드를 좁힐 수 있습니다. 기본 JQL은 해당 사용자 조건과 추가 JQL을 OR로 결합합니다. |
+| Confluence 8.5.0 | 설정한 기간 안에 나를 멘션한 페이지/댓글 검색 결과 | CQL `mention = currentUser()`에 추가 CQL 조건을 결합할 수 있습니다. 현재 사용자 컨텍스트로 인증해야 합니다. |
+| Bitbucket 8.9.10 | 설정한 기간 안에 갱신된 내가 리뷰어인 열린 Pull Request | `/rest/api/1.0/dashboard/pull-requests?role=REVIEWER&state=OPEN`. 프로젝트 키와 저장소 slug를 입력해 범위를 좁힐 수 있습니다. |
 | Synology Chat | Bot이 볼 수 있는 채널에서 설정한 기간 내 `@here` 또는 설정한 내 이름/별칭이 포함된 메시지 | Chat의 `SYNO.Chat.External` Bot API. 채널 ID를 비우면 Bot API가 반환하는 모든 채널을 조회합니다. |
 
 조회 기간은 과거 기록에 적용됩니다. 미래 Jira 기한은 계속 표시하며, Jira의 오늘 Worklog 확인도 매번 수행합니다. 오래된 Jira 기한 항목은 설정한 기간보다 오래된 경우 숨깁니다.
+
+각 서비스 설정의 추가 필터는 선택 사항입니다. Jira에는 JQL, Confluence에는 CQL 조건을 입력하고, Bitbucket에는 프로젝트 키와 저장소 slug를 쉼표로 나열합니다. 필터를 비워두면 기존 기본 범위가 유지됩니다. 예를 들어 Jira 추가 JQL에 `project = SWA AND labels in (review)`를 입력하면 기본 대상과 해당 JQL이 일치하는 이슈가 함께 포함됩니다. Confluence 추가 CQL에는 `space = "SWA" AND type = page`처럼 조건식만 입력합니다.
 
 인증은 사용자명/비밀번호 방식 또는 PAT(Bearer) 방식으로 입력합니다. 실제 인증 방식과 PAT 발급 가능 여부는 설치된 제품 설정과 사내 정책에 따라 달라질 수 있습니다. 가능하면 최소 권한의 읽기 전용 계정을 사용하세요.
 
@@ -54,7 +57,8 @@ npm run dist:win
 - 기본 TLS 인증서 검증을 유지합니다. 인증서 검증을 끄지 말고 사내 CA를 PC에 신뢰하도록 구성하세요.
 - Worklog 미등록은 현재 사용자가 관여하는 이슈의 Assignee와 Reporter를 기준으로, 해당 PC의 날짜 기준 오늘 기록을 조회합니다. Jira 프로젝트 권한·Worklog 가시성에 따라 일부 사람 또는 이슈가 결과에서 빠질 수 있습니다.
 - 기본 Jira 검색 범위는 Assignee/Reporter입니다. Jira에는 모든 설치에서 공통으로 쓸 수 있는 리뷰어 필드가 없으므로, 리뷰어가 별도 커스텀 필드라면 연동 설정의 추가 JQL에 해당 조건을 넣어야 합니다.
-- Synology Chat 메시지 조회는 Bot Token을 이용하는 외부 API 방식이며, Bot이 볼 수 있는 채널만 가능합니다. 채널 ID를 비우면 그 범위에서 모두 조회하지만, 개인 계정이 참여한 모든 채널이 자동으로 포함된다는 뜻은 아닙니다. 실제 사내 서버의 접근 권한과 메시지 반환 구조는 연동 검증이 필요합니다.
+- Synology Chat 메시지 조회는 Bot Token을 이용하는 외부 API 방식이며, Bot API가 반환하는 채널만 가능합니다. 채널 ID를 비우면 반환된 모든 채널을 조회하지만, 개인 계정이 참여한 모든 채널이 자동으로 포함된다는 뜻은 아닙니다. 이름/별칭 조건과 일치한 메시지는 채널과 작성자 이름을 함께 보여줍니다. 실제 사내 서버의 접근 권한과 메시지 반환 구조는 연동 검증이 필요합니다.
+- Synology Chat의 outgoing webhook은 새 메시지 이벤트를 지정 URL로 전달하는 방식입니다. 이는 앱의 기간 조회와 다른 방식이며 과거 메시지를 가져오지 않습니다. Bot Token이 없는 경우 전체 채널의 과거 메시지 조회는 현재 지원되는 연동 경로로 제공할 수 없습니다.
 
 ## 제품 API 참고
 
