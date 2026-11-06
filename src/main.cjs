@@ -10,6 +10,7 @@ let scheduleTimer;
 let quitting = false;
 const defaults = {
   schedule: ['08:30', '12:30', '18:00'],
+  historyDays: 7,
   jira: { enabled: false, baseUrl: '', username: '', authType: 'basic', additionalJql: '' },
   confluence: { enabled: false, baseUrl: '', username: '', authType: 'basic' },
   bitbucket: { enabled: false, baseUrl: '', username: '', authType: 'basic' },
@@ -54,6 +55,7 @@ function saveConfig(input) {
     }
   }
   safe.schedule = input.schedule || defaults.schedule;
+  safe.historyDays = Math.min(90, Math.max(1, Number.parseInt(input.historyDays, 10) || defaults.historyDays));
   writeJson('config.json', safe);
   writeJson('secrets.json', secrets);
   return getConfig();
