@@ -2,7 +2,9 @@ const { request, ensureHttp } = require('./http.cjs');
 async function fetchConfluence(config) {
   const base = ensureHttp(config.baseUrl);
   const days = Math.min(90, Math.max(1, Number(config.lookbackDays) || 7));
-  const query = new URLSearchParams({ cql: `mention = currentUser() AND lastmodified >= startOfDay("-${days}d")`, limit: '50', expand: 'content.space' });
+  const extraCql = (config.additionalCql || '').trim();
+  const cql = `mention = currentUser() AND lastmodified >= startOfDay("-${days}d")${extraCql ? ` AND (${extraCql})` : ''}`;
+  const query = new URLSearchParams({ cql, limit: '50', expand: 'content.space' });
   const data = await request(`${base}/rest/api/search?${query}`, config);
   return (data.results || []).map(result => {
     const content = result.content || result;
