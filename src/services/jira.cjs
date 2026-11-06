@@ -8,10 +8,12 @@ async function fetchJira(config) {
   const jql = `((assignee = currentUser() OR reporter = currentUser() OR creator = currentUser()) ${config.additionalJql ? `OR (${config.additionalJql})` : ''}) AND statusCategory != Done ORDER BY duedate ASC`;
   const data = await jiraSearch(base, config, jql, ['summary','status','assignee','reporter','duedate','issuetype','priority']);
   const items = [];
+  const days = Math.min(90, Math.max(1, Number(config.lookbackDays) || 7));
+  const dueCutoff = new Date(); dueCutoff.setHours(0, 0, 0, 0); dueCutoff.setDate(dueCutoff.getDate() - days);
   for (const issue of data.issues || []) {
     const f = issue.fields || {};
     const due = f.duedate;
-    if (due) items.push({ id: `jira:due:${issue.key}`, source: 'jira', kind: 'due', title: issue.key, detail: `${f.summary || '제목 없음'} · ${f.status?.name || ''}`, dueDate: due, url: `${base}/browse/${issue.key}`, priority: new Date(`${due}T23:59:59`) < new Date() ? 'urgent' : 'normal' });
+    if (due && new Date(`${due}T00:00:00`) >= dueCutoff) items.push({ id: `jira:due:${issue.key}`, source: 'jira', kind: 'due', title: issue.key, detail: `${f.summary || '제목 없음'} · ${f.status?.name || ''}`, dueDate: due, url: `${base}/browse/${issue.key}`, priority: new Date(`${due}T23:59:59`) < new Date() ? 'urgent' : 'normal' });
     const people = [f.assignee, f.reporter].filter(Boolean);
     if (!people.length) continue;
     try {
