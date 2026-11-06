@@ -1,6 +1,6 @@
 {
   "name": "si-work-secretary",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Windows tray assistant for work follow-ups across Jira, Confluence, Bitbucket and Synology Chat",
   "main": "src/main.cjs",
   "scripts": {
