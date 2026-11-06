@@ -13,7 +13,7 @@ async function collectSummary(config, completed = {}) {
   ];
   const results = await Promise.all(sources.map(async ([key, fetcher]) => {
     if (!config[key]?.enabled) return [];
-    try { return await fetcher(config[key]); }
+    try { return await fetcher({ ...config[key], lookbackDays: config.historyDays || 7 }); }
     catch (error) { return [{ id: `${key}:error`, source: key, kind: 'error', title: `${keyLabel(key)} 연결 확인 필요`, detail: error.message, url: config[key].baseUrl, priority: 'attention' }]; }
   }));
   return applyCompleted({ generatedAt: new Date().toISOString(), headline: '연결된 업무 도구에서 확인이 필요한 항목을 모았습니다.', items: results.flat() }, completed);
