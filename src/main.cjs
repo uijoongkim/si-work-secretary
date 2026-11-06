@@ -12,8 +12,8 @@ const defaults = {
   schedule: ['08:30', '12:30', '18:00'],
   historyDays: 7,
   jira: { enabled: false, baseUrl: '', username: '', authType: 'basic', additionalJql: '' },
-  confluence: { enabled: false, baseUrl: '', username: '', authType: 'basic' },
-  bitbucket: { enabled: false, baseUrl: '', username: '', authType: 'basic' },
+  confluence: { enabled: false, baseUrl: '', username: '', authType: 'basic', additionalCql: '' },
+  bitbucket: { enabled: false, baseUrl: '', username: '', authType: 'basic', projectKeys: '', repositorySlugs: '' },
   synology: { enabled: false, baseUrl: '', botToken: '', channels: '', names: '' }
 };
 
