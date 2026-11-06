@@ -14,7 +14,8 @@ async function fetchSynology(config) {
   const channels = channelsData.channels || channelsData;
   const allowed = new Set((config.channels || '').split(',').map(s => s.trim()).filter(Boolean));
   const names = (config.names || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
-  const since = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  const days = Math.min(90, Math.max(1, Number(config.lookbackDays) || 7));
+  const since = Date.now() - days * 24 * 60 * 60 * 1000;
   const items = [];
   for (const channel of Array.isArray(channels) ? channels : []) {
     if (allowed.size && !allowed.has(String(channel.channel_id))) continue;
